@@ -1,0 +1,23 @@
+{
+  "name": "homebridge-updownstopblind",
+  "version": "0.1.0",
+  "description": "Generic Up/Down/Stop window blind control for Homebridge: https://github.com/nfarina/homebridge",
+  "license": "ISC",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/agraf/homebridge-updownstopblind.git"
+  },
+  "bugs": {
+    "url": "http://github.com/agraf/homebridge-updownstopblind/issues"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "dependencies": {
+    "node-persist": "^2.1.0"
+  }
+}
