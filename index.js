@@ -73,10 +73,15 @@ UpDownStopBlind.prototype._setTargetPosition = function(position, callback) {
 
   this.log("Setting blind to " + position);
 
-  // Clear old timer if around
+  // Clear old timers if around
   if (this.move_timer !== undefined) {
     clearInterval(this.move_timer);
     this.move_timer = undefined;
+  }
+
+  if (this.stop_timer !== undefined) {
+    clearTimeout(this.stop_timer);
+    this.stop_timer = undefined;
   }
 
   var curpos;
@@ -107,15 +112,28 @@ UpDownStopBlind.prototype._setTargetPosition = function(position, callback) {
           stop = true;
 
       if (stop) {
-          stop_times++;
-
-          /* Send at least 5 stop messages so we really stop */
-          if (stop_times >= 5) {
+          if (position == 100 || position == 0) {
+              /*
+               * End position, give the blinds a full turnaround cycle time to adjust,
+               * but stop then to ensure that the control does not interfere with manual
+               * controls.
+               */
               clearInterval(this.move_timer);
-              this.move_timer = undefined;
+              this.stop_timer = setTimeout(function() {
+                  /* Send 5 stop messages to make sure it arrives */
+                  for (var i = 0; i < 5; i++)
+                      this._send_msg("stop");
+                  this.log("End position, stopping to release control");
+              }.bind(this), (this.time * 1000));
           } else {
-              if (position != 100 && position != 0) {
-                  // XXX 100/0 should still get an explicit stop, but after 10s or so
+              stop_times++;
+
+              /* Send at least 5 stop messages so we really stop */
+              if (stop_times >= 5) {
+                  /* Sent 5 messages, end of transmission */
+                  clearInterval(this.move_timer);
+                  this.move_timer = undefined;
+              } else {
                   this._send_msg("stop");
               }
           }
